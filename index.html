@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#120d26" />
+<meta name="description" content="Волшебное поздравление Алинке с 18-летием. 18 миров детства, маленькие тайны и большая любовь." />
+<meta property="og:title" content="Алинка, с 18-летием! ✨" />
+<meta property="og:description" content="Для тебя открывается целая сказочная вселенная." />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="countdown.css" />
+<title>Алинка • The Eighteenth Chapter</title>
+</head>
+<body>
+<canvas id="particles" aria-hidden="true"></canvas>
+<div id="cursorHalo" aria-hidden="true"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- Экран ожидания полуночи: не меняет прежние разделы и интерактивы сайта -->
+<section class="birthday-gate" id="birthdayGate" aria-label="Обратный отсчёт до полуночи">
+  <div class="gate-stars" aria-hidden="true"></div>
+  <div class="gate-atmosphere gate-atmosphere-one" aria-hidden="true"></div>
+  <div class="gate-atmosphere gate-atmosphere-two" aria-hidden="true"></div>
+  <div class="gate-topline"><span class="gate-logo"><span>✦</span> ALINKA.VERSE</span><span class="gate-top-right">A VERY SPECIAL NIGHT <span>✧</span> 18</span></div>
+  <img class="gate-castle" src="assets/castle.svg" alt="" aria-hidden="true" />
+  <div class="gate-content">
+    <div class="gate-overline"><i></i> ДО НАЧАЛА НОВОЙ СКАЗКИ <i></i></div>
+    <div class="gate-roman">CHAPTER <span>XVIII</span></div>
+    <h1>Алинка, твой момент<br /><em>уже совсем близко…</em></h1>
+    <p class="gate-subtitle">Осталось совсем немного до той самой минуты,<br />когда начинается новая волшебная глава.</p>
+    <div class="countdown-clock" role="timer" aria-live="off" aria-label="Время до полуночи">
+      <div class="count-cell"><strong id="countDays" aria-label="дней">00</strong><small>ДНЕЙ</small></div>
+      <div class="count-separator">:</div>
+      <div class="count-cell"><strong id="countHours" aria-label="часов">00</strong><small>ЧАСОВ</small></div>
+      <div class="count-separator">:</div>
+      <div class="count-cell"><strong id="countMinutes" aria-label="минут">00</strong><small>МИНУТ</small></div>
+      <div class="count-separator count-last-separator">:</div>
+      <div class="count-cell"><strong id="countSeconds" aria-label="секунд">00</strong><small>СЕКУНД</small></div>
+    </div>
+    <div class="gate-waiting"><span class="gate-waiting-spark">✧</span> <span id="gateTargetDescription">Ровно в 00:00 тебя ждёт сюрприз</span> <span class="gate-waiting-spark">✧</span></div>
+    <div class="gate-mini-rule"></div>
+    <div class="gate-footer-line">Пока часы тикают, загадай самое заветное желание <span>♡</span></div>
+    <div class="gate-tests" id="gateTests" hidden>
+       <div class="gate-test-label">✦ РЕЖИМ ПРОВЕРКИ · НЕ ВИДЕН ГОСТЯМ</div>
+       <div class="gate-test-buttons"><button type="button" id="testCountdown">▶ Отсчёт 10 секунд</button><button type="button" id="testVideoNow">▶ Видео сейчас</button><button type="button" id="testSkip">↗ Открыть сайт</button><button type="button" id="testReset">↺ Сброс</button></div>
+       <p id="testStatus" class="gate-test-status">Готово к тесту. Проверь обратный отсчёт и видео.</p>
+    </div>
+  </div>
+  <div class="gate-bottom"><span>MADE FOR ALINKA · WITH ALL MY LOVE</span><span id="gateNow">00:00:00</span></div>
+</section>
+
+<section class="birthday-film" id="birthdayFilm" aria-label="Праздничное видео" hidden>
+  <div class="birthday-film-header"><span>✧ A LITTLE SOMETHING FOR YOU</span><span>ALINKA · 18</span></div>
+  <video id="birthdayVideo" class="birthday-video" playsinline preload="auto" controlslist="nodownload" aria-label="Поздравительное видео для Алинки"></video>
+  <div class="film-shade" aria-hidden="true"></div>
+  <div class="film-loader" id="filmLoader"><span class="film-loader-star">✦</span><p>Самое волшебное начинается…</p></div>
+  <div class="film-message" id="filmMessage" hidden><h2>Твоё видео готово ♡</h2><p>Нажми на кнопку, чтобы воспроизвести его.</p><button class="film-btn" id="filmManualPlay" type="button">Включить видео ▶</button></div>
+  <div class="film-error" id="filmError" hidden><span>✧</span><h2>Магия немного задержалась…</h2><p>Видео не найдено или браузер не смог его открыть. Положи свой MP4 в <b>media/birthday.mp4</b> — и всё заработает.</p><button id="filmRetry" class="film-btn" type="button">Попробовать снова</button></div>
+  <div class="film-controls"><button id="filmSound" type="button" aria-label="Включить звук"><span id="filmSoundGlyph">◌</span> <span id="filmSoundText">Включить звук</span></button><button id="filmSkip" type="button">Перейти к сказке ↗</button></div>
+  <div class="film-progress" aria-hidden="true"><div id="filmProgressFill"></div></div>
+</section>
+
+<div class="intro" id="intro" aria-label="Начало сказки">
+  <div class="intro-stars" aria-hidden="true"></div>
+  <div class="intro-book" aria-hidden="true"><div class="book-cover"><span class="book-star">✧</span><span class="book-number">XVIII</span><span class="book-line"></span><span class="book-caption">ALINKA'S FAIRYTALE</span></div><div class="book-pages"></div></div>
+  <p class="eyebrow">Одно очень особенное приглашение</p>
+  <h1>Эта сказка<br><em>написана для тебя.</em></h1>
+  <p class="intro-sub">И сегодня в ней начинается самая красивая глава.</p>
+  <button id="enterBtn" class="btn btn-gold btn-xl" type="button">Открыть сказку <span aria-hidden="true">✦</span></button>
+  <span class="intro-note">Лучше смотреть со звуком и верой в чудеса ♡</span>
+</div>
+
+<header class="topbar" id="topbar">
+ <a class="brand" href="#home" aria-label="Вернуться к началу"><span class="brand-symbol">✧</span><span>ALINKA<span class="brand-dot">.</span>VERSE</span><small>THE 18TH CHAPTER</small></a>
+ <nav aria-label="Навигация"><a href="#worlds">Миры детства</a><a href="#wishes">18 желаний</a><a href="#magic">Чудеса</a><a href="#finale">Письмо</a></nav>
+ <div class="top-actions"><div class="progress-chip" title="Собранные звёздочки"><span>✦</span><b id="topCollected">0</b><span class="muted">/ 18</span></div><button id="soundBtn" class="icon-button" type="button" aria-label="Включить музыку" title="Музыка"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 18V5l12-2v13M9 9l12-2M9 18c0 2-2 3-4 3s-4-1-4-3 2-3 4-3 4 1 4 3Zm12-2c0 2-2 3-4 3s-4-1-4-3 2-3 4-3 4 1 4 3Z"/></svg></button></div>
+</header>
+
+<main>
+<section class="hero" id="home">
+ <div class="aurora aurora-one" aria-hidden="true"></div><div class="aurora aurora-two" aria-hidden="true"></div>
+ <div class="hero-inner">
+  <div class="hero-copy">
+   <div class="hero-kicker"><span class="kicker-line"></span> TODAY IS YOUR DAY • A SPECIAL FAIRYTALE <span class="tiny-star">✦</span></div>
+   <h2>С днём<br>рождения,<br><em>Алинка!</em></h2>
+   <p class="hero-paragraph">Однажды маленькая девочка мечтала о волшебстве. И вот ей исполнилось <strong>18</strong> — но самое настоящее волшебство только начинается.</p>
+   <div class="hero-buttons"><a class="btn btn-gold" href="#worlds">Начать путешествие <span>↗</span></a><button id="heroSurprise" class="btn btn-outline" type="button">Маленький сюрприз ♡</button></div>
+   <div class="hero-scroll"><span class="scroll-line"></span><span>Листай вниз — чудеса уже ждут</span></div>
+  </div>
+  <div class="hero-scene" aria-hidden="true"><div class="moon-halo"></div><img src="assets/castle.svg" alt="" class="castle-image" /><div class="scene-18">18<span>лет волшебства</span></div><div class="scene-orbit orbit-one">✧</div><div class="scene-orbit orbit-two">✦</div><div class="scene-orbit orbit-three">♡</div>
+   <div class="scene-sticker sticker-one"><div class="sticker-art"><b>🦇</b><img src="https://clipart-library.com/2023/41-418551_lagoona-blue-from-monster-high-hd-png-download.png" alt="" referrerpolicy="no-referrer" onerror="this.remove()" /></div><span>monster magic ✦</span></div>
+   <div class="scene-sticker sticker-two"><div class="sticker-art"><b>🧚</b><img src="https://2.bp.blogspot.com/-EwMEgGxnL1k/U1Fvq_8e8fI/AAAAAAAAA4Y/QqC7-XjW1ZM/s1600/Love2_Group_1280x1024-1.jpg" alt="" referrerpolicy="no-referrer" onerror="this.remove()" /></div><span>fairy forever ♡</span></div>
+   <div class="scene-sticker sticker-three"><div class="sticker-art"><b>🦄</b><img src="https://commons.wikimedia.org/wiki/Special:FilePath/My_Little_Pony_characters.png" alt="" referrerpolicy="no-referrer" onerror="this.remove()" /></div><span>friendship ✧</span></div>
+ </div>
+  <div class="hero-vertical">AN ENCHANTED BIRTHDAY EXPERIENCE <span>✧</span> MADE WITH LOVE</div>
+ </div>
+ <div class="hero-bottom"><span>✷</span><span>всё самое прекрасное — впереди</span><span>✷</span></div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div class="marquee-track">✧ MONSTER HIGH ✧ WINX CLUB ✧ MY LITTLE PONY ✧ DISNEY PRINCESSES ✧ STITCH ✧ EVER AFTER HIGH ✧ TOTALLY SPIES ✧ GRAVITY FALLS ✧ BARBIE ✧ FROZEN ✧ MONSTER HIGH ✧ WINX CLUB ✧ MY LITTLE PONY ✧ DISNEY PRINCESSES ✧ STITCH ✧ EVER AFTER HIGH ✧ TOTALLY SPIES ✧ GRAVITY FALLS ✧ BARBIE ✧ FROZEN ✧</div></div>
+
+<section class="section introduction reveal"><div class="section-narrow"><div class="section-overline">ПРОЛОГ <span>✦</span> ГЛАВА ПЕРВАЯ</div><h2 class="section-title">18 лет — это не конец детства.<br><em>Это его волшебное продолжение.</em></h2><p>Ты выросла среди фей, принцесс, волшебных пони, невероятных приключений и героинь, которые всегда выбирали быть собой. И сегодня все эти миры будто собрались вместе, чтобы сказать тебе самое главное…</p><div class="heart-stamp">ты — чудо <span>♡</span></div></div></section>
+
+<section class="section worlds-section" id="worlds">
+ <div class="section-top reveal"><div><div class="section-overline">ГЛАВА 01 / НОСТАЛЬГИЯ</div><h2 class="section-title">Порталы<br><em>в твоё детство</em></h2></div><div class="section-side"><span class="section-count">01—18</span><p>18 любимых вселенных. 18 маленьких предсказаний. Загляни в каждую, чтобы собрать звёздочки и открыть последний секрет.</p></div></div>
+ <div class="world-progress"><div><span class="world-progress-glyph">✧</span><span>Звёздная коллекция</span></div><div class="progress-bar"><div id="progressFill"></div></div><span id="progressText">0 из 18 открыто</span></div>
+ <div id="worldGrid" class="world-grid" aria-live="polite"></div>
+ <p class="world-footnote"><span>✦</span> Нажимай на карточки — за каждым порталом спрятано послание именно для тебя.</p>
+</section>
+
+<section class="interlude reveal" aria-label="Поздравление"><div class="interlude-stars">✦ ✧ ✦</div><p>Some girls are born to sparkle.</p><h2>Но некоторые девочки<br><em>сами и есть волшебство.</em></h2><span>И это, конечно, про тебя. ♡</span></section>
+
+<section class="section reasons-section" id="wishes">
+ <div class="section-top reveal"><div><div class="section-overline">ГЛАВА 02 / САМОЕ ГЛАВНОЕ</div><h2 class="section-title">18 причин<br><em>тебе улыбнуться</em></h2></div><div class="section-side"><span class="section-count">XVIII REASONS</span><p>У каждой звёздочки — своя мысль. Нажимай на карточки, переворачивай их и находи что-то родное.</p></div></div>
+ <div class="reasons-grid" id="reasonsGrid"></div>
+ <p class="center-hint">И это только восемнадцать. На самом деле причин бесконечно много. ♡</p>
+</section>
+
+<section class="section magic-section" id="magic">
+ <div class="section-top reveal"><div><div class="section-overline">ГЛАВА 03 / ПОЧТИ НАСТОЯЩИЕ ЧУДЕСА</div><h2 class="section-title">Немного<br><em>днярожденской магии</em></h2></div><div class="section-side"><p>Здесь не обязательно взрослеть. Можно загадать желание, узнать своё предсказание и просто поиграть.</p></div></div>
+ <div class="magic-grid">
+  <article class="magic-card fortune-card reveal"><div class="magic-card-top"><span class="micro-label">МАГИЧЕСКИЙ ОРАКУЛ</span><span class="card-deco">✷</span></div><div class="fortune-orb"><div class="fortune-orb-inside">✧</div></div><h3>Что ждёт твоё сердце?</h3><p id="fortuneText">Внутри этой хрустальной сферы спрятано маленькое предсказание для тебя.</p><button id="fortuneBtn" class="btn btn-pink" type="button">Получить предсказание <span>✦</span></button></article>
+  <article class="magic-card quiz-card reveal"><div class="magic-card-top"><span class="micro-label">ТЕСТ НА ГЛАВНУЮ ГЕРОИНЮ</span><span class="card-deco">❀</span></div><div class="quiz-icon">♛</div><h3>Кто ты в сказке?</h3><p id="quizPrompt">Представь: ты попала в волшебное королевство. Что сделаешь первым делом?</p><div id="quizOptions" class="quiz-options"><button type="button" data-result="fairy">Полечу навстречу приключениям 🧚</button><button type="button" data-result="princess">Найду дворец и красивое платье 👑</button><button type="button" data-result="rebel">Устрою своё собственное шоу 💖</button></div><div id="quizResult" class="quiz-result" hidden></div></article>
+ </div>
+</section>
+
+<section class="section cake-section" id="cake"><div class="cake-content reveal"><div class="section-overline">ГЛАВА 04 / ЗАГАДАЙ ЖЕЛАНИЕ</div><h2 class="section-title">Загадай желание.<br><em>И пусть сбудется всё.</em></h2><p>Перед тобой 18 свечей — по одной за каждый год, в котором ты делала мир лучше. Нажимай на огоньки, пока все они не погаснут.</p><div class="cake-scene"><div class="candle-row" id="candles" aria-label="18 интерактивных свечей"></div><div class="cake-top"><span class="icing-drops"></span></div><div class="cake-middle"><div class="cake-message">HAPPY 18, ALINKA!</div><div class="cake-hearts">♡ ✦ ♡ ✦ ♡</div></div><div class="cake-bottom"></div><div class="cake-plate"></div></div><div class="candle-status" id="candleStatus">Свечей горит: 18</div><button id="blowAll" class="btn btn-outline" type="button">Задуть все разом ✨</button></div></section>
+
+<section class="section finale-section" id="finale"><div class="finale-glow" aria-hidden="true"></div><div class="finale-content reveal"><div class="section-overline">ПОСЛЕДНЯЯ ГЛАВА / ТОЛЬКО ДЛЯ ТЕБЯ</div><h2 class="section-title">И вот что я<br><em>очень хочу тебе сказать…</em></h2><div class="envelope-area"><button class="envelope" id="openLetter" type="button" aria-label="Открыть личное письмо"><div class="envelope-back"></div><div class="envelope-paper"><span>For Alinka</span><i>♡</i></div><div class="envelope-front"></div><div class="envelope-flap"></div><div class="envelope-seal">✦</div></button></div><p class="open-hint">Нажми на конверт. Там кое-что важное.</p></div></section>
+
+<footer class="footer"><div class="footer-logo">ALINKA<span>✦</span>VERSE</div><p>Сделано с любовью. Для самой особенной именинницы.</p><small>Неофициальное личное фан-поздравление · <a href="THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener">Права на персонажей</a> · <a href="CREDITS.md" target="_blank" rel="noopener">Источники изображений</a></small><div class="footer-heart">♡</div></footer>
+</main>
+
+<div id="worldModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="worldModalTitle"><div class="modal-backdrop" data-close="worldModal"></div><div class="modal-panel world-modal-panel"><button class="modal-close" data-close="worldModal" aria-label="Закрыть">×</button><div class="modal-image" id="worldModalImage"><div class="modal-image-fallback">✧</div></div><div class="modal-copy"><div class="micro-label" id="worldModalLabel"></div><h2 id="worldModalTitle"></h2><p class="modal-characters" id="worldModalCharacters"></p><div class="modal-wish" id="worldModalWish"></div><button id="collectBtn" class="btn btn-gold" type="button">Забрать свою звёздочку ✦</button></div></div></div>
+<div id="letterModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="letterTitle"><div class="modal-backdrop" data-close="letterModal"></div><div class="modal-panel letter-modal-panel"><button class="modal-close" data-close="letterModal" aria-label="Закрыть">×</button><div class="letter-decoration">✧ ✦ ✧</div><div class="micro-label">TO THE GIRL WHO MAKES THE WORLD BRIGHTER</div><h2 id="letterTitle">Моя дорогая Алинка…</h2><div class="letter-body"><p>Сегодня тебе восемнадцать. Восемнадцать лет улыбок, мечтаний, маленьких побед, огромных чувств и историй, которые сделали тебя именно такой, какая ты есть.</p><p>Я хочу, чтобы ты никогда не забывала: тебе не нужно быть идеальной, чтобы быть невероятной. Ты уже такая. С твоим характером, твоим смехом, твоими странностями, твоей добротой и твоим особенным светом.</p><p>Пусть рядом всегда будут люди, которые ценят твоё сердце. Пусть мечты перестают казаться невозможными, а каждый новый год дарит не только взрослые решения, но и детскую способность радоваться самым простым вещам.</p><p>Не теряй ту маленькую девочку, которая верила в фей, дружбу, сказки и чудеса. Потому что самое красивое в тебе — то, что ты умеешь создавать это волшебство сама.</p><p class="letter-emphasis">С днём рождения, моя хорошая. Я тебя очень люблю. ♡</p></div><div class="letter-signature">С бесконечной нежностью <span>✧</span></div><div class="letter-actions"><button id="letterFireworks" class="btn btn-pink" type="button">Ещё немного магии ✨</button><button id="shareBtn" class="btn btn-outline" type="button">Поделиться сказкой ↗</button></div></div></div>
+<div id="secretModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="secretTitle"><div class="modal-backdrop" data-close="secretModal"></div><div class="modal-panel secret-panel"><button class="modal-close" data-close="secretModal" aria-label="Закрыть">×</button><div class="secret-glyph">☾</div><span class="micro-label">СЕКРЕТНАЯ КОМНАТА</span><h2 id="secretTitle">Тсс… ты нашла тайну!</h2><p>Даже если весь мир вдруг перестанет верить в сказки, я всё равно буду верить в твою. Потому что в ней есть ты. И это самое настоящее чудо.</p><strong>Люблю тебя до Луны и обратно. ♡</strong></div></div>
+
+<script src="countdown-config.js" defer></script>
+<script src="app.js" defer></script>
+<script src="countdown.js" defer></script>
+</body>
+</html>
